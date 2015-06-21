@@ -1,9 +1,12 @@
 ﻿namespace Singular.Core.Dynamic
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Reflection.Emit;
 
+    using global::Singular.Champion;
     using global::Singular.Core.Composite;
     using global::Singular.Core.Enum;
 
@@ -21,9 +24,9 @@
         public static BehaviorType BehaviorType { get; set; }
 
         /// <summary>
-        /// A list of methods for the assembly with a composite return type
+        /// A list of types for the assembly inheriting from <see cref="ChampionComposite"/>.
         /// </summary>
-        private static readonly List<MethodInfo> Methods = new List<MethodInfo>();
+        private static readonly List<Type> Types = new List<Type>();
 
         /// <summary>
         /// Invokes the initializers.
@@ -36,18 +39,16 @@
                 return;
             }
 
-            if (!Methods.Any())
+            if (!Types.Any())
             {
-                foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-                {
-                    Methods.AddRange(type.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(m => !m.IsGenericMethod && !m.GetParameters().Any()).Where(m => m.ReturnType.IsAssignableFrom(typeof(Composite))));
-                }
+                var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(ChampionComposite)));
+                Types.AddRange(types);
             }
 
-            var matches = new Dictionary<BehaviorAttribute, MethodInfo>();
-            foreach (var method in Methods)
+            var matches = new Dictionary<BehaviorAttribute, Type>();
+            foreach (var type in Types)
             {
-                foreach (var attribute in method.GetCustomAttributes(typeof(BehaviorAttribute), false))
+                foreach (var attribute in type.GetCustomAttributes(typeof(BehaviorAttribute), false))
                 {
                     var behavior = attribute as BehaviorAttribute;
                     if (behavior == null || !IsMatchingMethod(behavior, champion, BehaviorType.Initialize))
@@ -55,13 +56,14 @@
                         continue;
                     }
 
-                    matches.Add(behavior, method);
+                    matches.Add(behavior, type);
                 }
             }
 
             foreach (var match in matches.OrderByDescending(m => m.Key.Priority))
             {
-                match.Value.Invoke(null, null);
+                BehaviorType = BehaviorType.Initialize;
+                InvokeComposite(match.Value);
             }
         }
 
@@ -69,29 +71,31 @@
         /// Gets the composite.
         /// </summary>
         /// <param name="champion">The champion.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="behavior">The behavior type.</param>
         /// <param name="count">The count of composites.</param>
         /// <returns>
         /// The sequential selector composite or null if no matches
         /// </returns>
-        public static Composite GetComposite(Champion champion, BehaviorType type, out int count)
+        public static Composite GetComposite(Champion champion, BehaviorType behavior, out int count)
         {
             count = 0;
 
+            BehaviorType = behavior;
+
             var matches = new Dictionary<BehaviorAttribute, Composite>();
 
-            foreach (var method in Methods)
+            foreach (var type in Types)
             {
-                foreach (var attribute in method.GetCustomAttributes(typeof(BehaviorAttribute), false))
+                foreach (var attribute in type.GetCustomAttributes(typeof(BehaviorAttribute), false))
                 {
-                    var behavior = attribute as BehaviorAttribute;
-                    if (behavior == null || !IsMatchingMethod(behavior, champion, type))
+                    var behaviorAttribute = attribute as BehaviorAttribute;
+                    if (behaviorAttribute == null || !IsMatchingMethod(behaviorAttribute, champion, behavior))
                     {
                         continue;
                     }
-
-                    var composite = method.Invoke(null, null) as Composite;
-                    matches.Add(behavior, composite);
+                    
+                    var composite = InvokeComposite(type);
+                    matches.Add(behaviorAttribute, composite);
                 }
             }
 
@@ -130,6 +134,33 @@
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Invokes the composite using dynamic methods as we are in a sandbox.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        /// The composite.
+        /// </returns>
+        private static Composite InvokeComposite(Type type)
+        {
+            var target = type.GetConstructor(Type.EmptyTypes);
+            if (target == null || target.DeclaringType == null)
+            {
+                return null;
+            }
+
+            var dynamic = new DynamicMethod(string.Empty, type, new Type[0], target.DeclaringType);
+            var il = dynamic.GetILGenerator();
+            il.DeclareLocal(target.DeclaringType);
+            il.Emit(OpCodes.Newobj, target);
+            il.Emit(OpCodes.Stloc_0);
+            il.Emit(OpCodes.Ldloc_0);
+            il.Emit(OpCodes.Ret);
+
+            var method = (Func<ChampionComposite>)dynamic.CreateDelegate(typeof(Func<ChampionComposite>));
+            return method().Composite;
         }
     }
 }

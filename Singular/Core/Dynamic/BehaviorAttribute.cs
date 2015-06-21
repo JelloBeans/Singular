@@ -7,7 +7,7 @@
     /// <summary>
     /// The behavior attribute.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     internal sealed class BehaviorAttribute : Attribute
     {
         /// <summary>

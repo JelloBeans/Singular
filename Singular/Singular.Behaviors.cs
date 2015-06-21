@@ -23,7 +23,7 @@
         /// Creates the behaviors for the current champion
         /// </summary>
         /// <returns>True if successful else false.</returns>
-        public bool CreateBehaviors()
+        private bool CreateBehaviors()
         {
             CompositeBuilder.InvokeInitializers(this.Champion);
 

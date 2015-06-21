@@ -1,8 +1,7 @@
 ﻿namespace Singular.Champion.Sivir
 {
     using global::Singular.Core.Composite;
-    using global::Singular.Core.Dynamic;
-    using global::Singular.Core.Enum;
+    using global::Singular.Core.Composite.Helpers;
 
     /// <summary>
     /// Handles the initialize behavior for Sivir
@@ -13,13 +12,9 @@
         /// Creates the initialize behavior for Sivir.
         /// </summary>
         /// <returns>The composite for Sivir initialize behavior.</returns>
-        [Behavior(BehaviorType.Initialize, Champion.Sivir)]
         public static Composite CreateSivirInitialize()
         {
-            return new SequentialSelector(
-                new Decorator(
-                    ctx => true,
-                    new Action(a => RunStatus.Success)));
+            return new SequentialSelector(new Decorator(ctx => true, new ActionAlwaysSuccess()));
         }
     }
 }

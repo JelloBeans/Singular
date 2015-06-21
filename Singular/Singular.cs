@@ -2,6 +2,8 @@
 {
     using System;
 
+    using global::Singular.Core.Composite;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -64,7 +66,15 @@
         /// <value>
         /// The orbwalker.
         /// </value>
-        private Orbwalker Orbwalker { get; set; }
+        public Orbwalker Orbwalker { get; set; }
+
+        /// <summary>
+        /// Gets or sets the executor.
+        /// </summary>
+        /// <value>
+        /// The executor.
+        /// </value>
+        private Executor Executor { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Singular"/> class.
@@ -84,18 +94,19 @@
             if (!this.CreateBehaviors())
             {
                 // If we have no auto carry behavior we cannot proceed and must stop immediately.
-                Notifications.AddNotification(
-                    new Notification(
-                        string.Format("No AutoCarry composite could be found for champion: {0}", this.Champion),
-                        5,
-                        true));
+                Notifications.AddNotification(new Notification(string.Format("No AutoCarry composite could be found for champion: {0}", this.Champion), 3000));
                 return;
             }
 
-            this.Orbwalker = new Orbwalker();
+            CreateMenu();
 
-            // Attach events last to prevent any possible exceptions
+            this.Orbwalker = new Orbwalker();
+            
             this.AttachEvents();
+
+            this.Executor = new Executor();
+
+            Notifications.AddNotification(new Notification(string.Format("Loaded Singular for {0}", this.Champion), 3000));
         }
 
     }

@@ -13,7 +13,7 @@
         /// Gets the projectile speed.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <returns></returns>
+        /// <returns>The projectile speed of the source.</returns>
         public static float GetProjectileSpeed(this Obj_AI_Base source)
         {
             var hero = source as Obj_AI_Hero;
@@ -21,8 +21,10 @@
             {
                 return hero.IsMeele || hero.ChampionName == "Azir" ? float.MaxValue : hero.BasicAttack.MissileSpeed;
             }
+
             return source.IsMeele ? float.MaxValue : source.BasicAttack.MissileSpeed;
         }
+
         /// <summary>
         /// Time until the source dies.
         /// </summary>

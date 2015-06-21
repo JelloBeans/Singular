@@ -37,6 +37,14 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Action"/> class.
         /// </summary>
+        public Action()
+        {
+            
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Action"/> class.
+        /// </summary>
         /// <param name="action">The action.</param>
         public Action(ActionDelegate action)
         {

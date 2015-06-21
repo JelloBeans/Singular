@@ -9,7 +9,7 @@
         /// <summary>
         /// Attaches the events.
         /// </summary>
-        public void AttachEvents()
+        private void AttachEvents()
         {
             this.Orbwalker.AttachEvents();
         }

@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Singular", "Singular\Singular.csproj", "{83DAA57C-DCE8-4DCB-A695-74EED74A737D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingularLibrary", "SingularLibrary\SingularLibrary.csproj", "{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{83DAA57C-DCE8-4DCB-A695-74EED74A737D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83DAA57C-DCE8-4DCB-A695-74EED74A737D}.Release|x86.ActiveCfg = Release|x86
 		{83DAA57C-DCE8-4DCB-A695-74EED74A737D}.Release|x86.Build.0 = Release|x86
+		{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACCB3D8E-CE22-44F0-BD72-C099FF9FCD2B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

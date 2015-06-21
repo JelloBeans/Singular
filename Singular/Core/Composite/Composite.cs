@@ -7,6 +7,9 @@
     /// </summary>
     public abstract class Composite : IEquatable<Composite>
     {
+        /// <summary>
+        /// The unique identifier
+        /// </summary>
         /// <value>
         /// The unique identifier.
         /// </value>

@@ -3,9 +3,6 @@
     <CollectionProperty Name="DictionaryFolders">
       <Value>Dictionary</Value>
     </CollectionProperty>
-    <CollectionProperty Name="RecognizedWords">
-      <Value>sivir</Value>
-    </CollectionProperty>
   </GlobalSettings>
   <Parsers>
     <Parser ParserId="StyleCop.CSharp.CsParser">
