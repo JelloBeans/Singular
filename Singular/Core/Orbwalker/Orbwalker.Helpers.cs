@@ -2,13 +2,44 @@
 {
     using System.Linq;
 
+    using global::Singular.Core.Enum;
+
     using LeagueSharp;
 
     /// <summary>
     /// Extensions for the orb walker class.
     /// </summary>
-    public static class OrbwalkerExtensions
+    public static class OrbwalkerHelpers
     {
+        /// <summary>
+        /// Determines whether [is automatic attack] [the specified ability].
+        /// </summary>
+        /// <param name="ability">The ability.</param>
+        /// <returns>True if is auto attack else false.</returns>
+        public static bool IsAutoAttack(string ability)
+        {
+            var lowerAbility = ability.ToLower();
+
+            NoAttackAbility noAttackAbility;
+            if (System.Enum.TryParse(lowerAbility, true, out noAttackAbility))
+            {
+                return true;
+            }
+            
+            if (lowerAbility.Contains("attack"))
+            {
+                return true;
+            }
+
+            AttackAbility attackAbility;
+            if (System.Enum.TryParse(lowerAbility, true, out attackAbility))
+            {
+                return true;
+            }
+
+            return lowerAbility.Contains("attack");
+        }
+
         /// <summary>
         /// Gets the projectile speed.
         /// </summary>

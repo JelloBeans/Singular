@@ -101,10 +101,9 @@
             CreateMenu();
 
             this.Orbwalker = new Orbwalker();
+            this.Executor = new Executor();
             
             this.AttachEvents();
-
-            this.Executor = new Executor();
 
             Notifications.AddNotification(new Notification(string.Format("Loaded Singular for {0}", this.Champion), 3000));
         }

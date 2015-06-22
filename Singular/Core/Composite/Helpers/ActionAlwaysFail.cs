@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <returns>The RunStatus.</returns>
-        public override RunStatus Execute(object ctx)
+        public override RunStatus Execute(Singular ctx)
         {
             return RunStatus.Failure;
         }

@@ -5,13 +5,13 @@
     /// </summary>
     /// <param name="ctx">The context.</param>
     /// <returns>The run status of the action.</returns>
-    public delegate RunStatus ActionDelegate(object ctx);
+    public delegate RunStatus ActionDelegate(Singular ctx);
 
     /// <summary>
     /// The action success delegate.
     /// </summary>
     /// <param name="ctx">The context.</param>
-    public delegate void ActionSuccessDelegate(object ctx);
+    public delegate void ActionSuccessDelegate(Singular ctx);
 
     /// <summary>
     /// The base action class. Executes actions and returns their status.
@@ -65,7 +65,7 @@
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <returns>The RunStatus.</returns>
-        public override RunStatus Execute(object ctx)
+        public override RunStatus Execute(Singular ctx)
         {
             if (this.ActionSuccessRunner != null)
             {

@@ -7,7 +7,7 @@
     /// <returns>
     /// True or false if the decorator can execute
     /// </returns>
-    public delegate bool DecoratorDelegate(object ctx);
+    public delegate bool DecoratorDelegate(Singular ctx);
 
     /// <summary>
     /// A wrapper to determine if a composite can execute
@@ -48,7 +48,7 @@
         /// <returns>
         /// The RunStatus.
         /// </returns>
-        public override RunStatus Execute(object ctx)
+        public override RunStatus Execute(Singular ctx)
         {
             return this.DecoratorDelegate(ctx) ? this.Composite.Tick(ctx) : RunStatus.Failure;
         }

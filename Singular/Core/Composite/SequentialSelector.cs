@@ -50,7 +50,7 @@
         /// <returns>
         /// The RunStatus.
         /// </returns>
-        public override RunStatus Execute(object ctx)
+        public override RunStatus Execute(Singular ctx)
         {
             var hasSuccess = false;
             foreach (var status in this.Composites.Select(composite => composite.Tick(ctx)))

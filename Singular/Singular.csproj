@@ -97,11 +97,11 @@
   <ItemGroup>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, PublicKeyToken=a41ba14f653257a6, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\LeagueSharp\System\LeagueSharp.dll</HintPath>
+      <HintPath>References\LeagueSharp.dll</HintPath>
     </Reference>
-    <Reference Include="LeagueSharp.Common, Version=1.0.0.39, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="LeagueSharp.Common, Version=1.0.0.40, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\LeagueSharp\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>References\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=345b829e6e492981, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -125,6 +125,7 @@
     <Compile Include="Core\Composite\Helpers\ActionAlwaysFail.cs" />
     <Compile Include="Core\Dynamic\BehaviorAttribute.cs" />
     <Compile Include="Core\Dynamic\CompositeBuilder.cs" />
+    <Compile Include="Core\Enum\AttackAbility.cs" />
     <Compile Include="Core\Enum\BehaviorType.cs" />
     <Compile Include="Core\Enum\Champion.cs" />
     <Compile Include="Core\Composite\Action.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Core\Enum\OrbwalkerMode.cs" />
     <Compile Include="Core\Orbwalker\MissileMarker.cs" />
     <Compile Include="Core\Orbwalker\Orbwalker.cs" />
+    <Compile Include="Core\Orbwalker\Orbwalker.Events.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,7 +152,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="Singular.Events.cs" />
-    <Compile Include="Core\Orbwalker\Orbwalker.Extensions.cs" />
+    <Compile Include="Core\Orbwalker\Orbwalker.Helpers.cs" />
+    <Compile Include="Core\Orbwalker\Orbwalker.Menu.cs" />
+    <Compile Include="Core\Orbwalker\Orbwalker.MissileManager.cs" />
+    <Compile Include="Core\Orbwalker\Orbwalker.Drawing.cs" />
     <None Include="Properties\app.manifest" />
     <None Include="Settings.StyleCop" />
   </ItemGroup>
@@ -183,12 +188,6 @@
     <Folder Include="Core\Event\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SingularLibrary\SingularLibrary.csproj">
-      <Project>{accb3d8e-ce22-44f0-bd72-c099ff9fcd2b}</Project>
-      <Name>SingularLibrary</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -210,6 +209,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SingularLibrary\SingularLibrary.csproj">
+      <Project>{accb3d8e-ce22-44f0-bd72-c099ff9fcd2b}</Project>
+      <Name>SingularLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

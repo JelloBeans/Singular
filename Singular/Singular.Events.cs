@@ -12,6 +12,7 @@
         private void AttachEvents()
         {
             this.Orbwalker.AttachEvents();
+            this.Executor.AttachEvents();
         }
         
     }

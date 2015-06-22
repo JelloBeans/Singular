@@ -21,7 +21,7 @@
         /// <value>
         /// The type of the behavior.
         /// </value>
-        public static BehaviorType BehaviorType { get; set; }
+        public static BehaviorType CurrentBehaviorType { get; set; }
 
         /// <summary>
         /// A list of types for the assembly inheriting from <see cref="ChampionComposite"/>.
@@ -62,7 +62,7 @@
 
             foreach (var match in matches.OrderByDescending(m => m.Key.Priority))
             {
-                BehaviorType = BehaviorType.Initialize;
+                CurrentBehaviorType = BehaviorType.Initialize;
                 InvokeComposite(match.Value);
             }
         }
@@ -80,7 +80,7 @@
         {
             count = 0;
 
-            BehaviorType = behavior;
+            CurrentBehaviorType = behavior;
 
             var matches = new Dictionary<BehaviorAttribute, Composite>();
 
@@ -93,7 +93,8 @@
                     {
                         continue;
                     }
-                    
+
+                    CurrentBehaviorType = behavior;
                     var composite = InvokeComposite(type);
                     matches.Add(behaviorAttribute, composite);
                 }

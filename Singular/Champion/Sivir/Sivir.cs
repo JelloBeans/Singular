@@ -20,13 +20,14 @@
         {
             get
             {
-                switch (CompositeBuilder.BehaviorType)
+                switch (CompositeBuilder.CurrentBehaviorType)
                 {
                     case BehaviorType.Initialize:
                         return CreateSivirInitialize();
                     case BehaviorType.AutoCarry:
                         return CreateSivirAutoCarry();
                 }
+
                 return null;
             }
         }

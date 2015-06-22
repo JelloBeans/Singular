@@ -56,14 +56,14 @@
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <returns>The RunStatus.</returns>
-        public abstract RunStatus Execute(object ctx);
+        public abstract RunStatus Execute(Singular ctx);
         
         /// <summary>
         /// Executes the user code of the composite.
         /// </summary>
         /// <param name="ctx">The context.</param>
         /// <returns>The run status.</returns>
-        public virtual RunStatus Tick(object ctx)
+        public virtual RunStatus Tick(Singular ctx)
         {
             if (!this.LastStatus.HasValue || this.LastStatus == RunStatus.Running)
             {
