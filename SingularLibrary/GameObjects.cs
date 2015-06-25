@@ -84,11 +84,21 @@
         {
             GameObjectSet.UnionWith(ObjectManager.Get<GameObject>());
 
-            Minions.UnionWith(ObjectManager.Get<Obj_AI_Minion>().Where(m => m.Team != GameObjectTeam.Neutral && !m.Name.Contains("ward") && !m.Name.Contains("trinket")));
+            Minions.UnionWith(ObjectManager.Get<Obj_AI_Minion>().Where(IsMinion));
 
             GameObject.OnCreate += GameObjects_GameObject_OnCreate;
             GameObject.OnDelete += GameObjects_GameObject_OnDelete;
             Game.OnUpdate += GameObjects_Game_OnUpdate;
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is minion.
+        /// </summary>
+        /// <param name="minion">The minion.</param>
+        /// <returns></returns>
+        public static bool IsMinion(Obj_AI_Minion minion)
+        {
+            return minion != null && !minion.Name.Contains("ward") && !minion.Name.Contains("trinket") && minion.Team != GameObjectTeam.Neutral;
         }
 
         /// <summary>
@@ -113,7 +123,7 @@
             GameObjectSet.Add(sender);
 
             var minion = sender as Obj_AI_Minion;
-            if (minion != null && minion.Team != GameObjectTeam.Neutral && !minion.Name.Contains("ward") && !minion.Name.Contains("trinket"))
+            if (IsMinion(minion))
             {
                 Minions.Add(minion);
             }
@@ -129,7 +139,7 @@
             GameObjectSet.Remove(sender);
 
             var minion = sender as Obj_AI_Minion;
-            if (minion != null && minion.Team != GameObjectTeam.Neutral && !minion.Name.Contains("ward") && !minion.Name.Contains("trinket"))
+            if (IsMinion(minion))
             {
                 Minions.Remove(minion);
             }

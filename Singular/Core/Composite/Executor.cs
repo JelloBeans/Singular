@@ -32,7 +32,21 @@
         public void AttachEvents()
         {
             Game.OnUpdate += Executor_Game_OnUpdate;
-            Obj_AI_Base.OnProcessSpellCast += Executor_Obj_AI_Base_OnProcessSpellCast;
+            Orbwalker.OnAfterAutoAttack += Executor_Orbwalker_OnAfterAutoAttack;
+        }
+
+        /// <summary>
+        /// The after auto attack event of <see cref="Orbwalker"/>.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="target">The target.</param>
+        private static void Executor_Orbwalker_OnAfterAutoAttack(AttackableUnit sender, AttackableUnit target)
+        {
+            var composite = Singular.GetComposite(BehaviorType.AfterAttack);
+            if (composite != null)
+            {
+                composite.Tick(Singular);
+            }
         }
 
         /// <summary>
@@ -64,29 +78,6 @@
             if (composite != null)
             {
                 composite.Tick(Singular);
-            }
-        }
-
-        /// <summary>
-        /// Handles the auto attack (process spell) event of <see cref="Obj_AI_Base"/>
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs"/> instance containing the event data.</param>
-        private static void Executor_Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            if (!sender.IsMe)
-            {
-                return;
-            }
-
-            var abilityName = args.SData.Name;
-            if (OrbwalkerHelpers.IsAutoAttack(abilityName))
-            {
-                var composite = Singular.GetComposite(BehaviorType.AfterAttack);
-                if (composite != null)
-                {
-                    composite.Tick(Singular);
-                }
             }
         }
     }

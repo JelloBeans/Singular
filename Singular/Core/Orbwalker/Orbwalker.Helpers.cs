@@ -23,7 +23,7 @@
             NoAttackAbility noAttackAbility;
             if (System.Enum.TryParse(lowerAbility, true, out noAttackAbility))
             {
-                return true;
+                return false;
             }
             
             if (lowerAbility.Contains("attack"))
@@ -32,12 +32,7 @@
             }
 
             AttackAbility attackAbility;
-            if (System.Enum.TryParse(lowerAbility, true, out attackAbility))
-            {
-                return true;
-            }
-
-            return lowerAbility.Contains("attack");
+            return System.Enum.TryParse(lowerAbility, true, out attackAbility);
         }
 
         /// <summary>

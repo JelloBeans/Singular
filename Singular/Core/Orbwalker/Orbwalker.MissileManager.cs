@@ -1,35 +1,14 @@
 ﻿namespace Singular.Core.Orbwalker
 {
-    using System.Linq;
-
     using LeagueSharp;
 
     /// <summary>
-    /// Handles the missiles sent by minions
+    /// The missile manager for the orbwalker, tracks missiles sent by minions and allies
     /// </summary>
     public partial class Orbwalker
     {
         /// <summary>
-        /// Handles the game object created event.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void Orbwalker_Missile_GameObject_OnCreate(GameObject sender, System.EventArgs args)
-        {
-            if (!sender.IsValid)
-            {
-                return;
-            }
-
-            var missile = sender as MissileClient;
-            if (missile != null)
-            {
-                this.Orbwalker_MissileClient_OnCreate(missile);
-            }
-        }
-
-        /// <summary>
-        /// Handles the missile client from game object created event.
+        /// The missile client created event from <see cref="Orbwalker"/>.
         /// </summary>
         /// <param name="missile">The missile.</param>
         private void Orbwalker_MissileClient_OnCreate(MissileClient missile)
@@ -49,16 +28,17 @@
         }
 
         /// <summary>
-        /// Handles the game object deleted event
+        /// The game object deleted event of <see cref="GameObject"/>.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void Orbwalker_Missile_GameObject_OnDelete(GameObject sender, System.EventArgs args)
         {
+            this.MissileMarkers.RemoveAll(m => m.MissileClient.NetworkId == sender.NetworkId);
         }
 
         /// <summary>
-        /// Handles the game update event
+        /// The game update event of <see cref="GameObject"/>.
         /// </summary>
         /// <param name="args">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void Orbwalker_Missile_Game_OnUpdate(System.EventArgs args)

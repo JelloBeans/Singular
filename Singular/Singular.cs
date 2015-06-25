@@ -94,7 +94,7 @@
             if (!this.CreateBehaviors())
             {
                 // If we have no auto carry behavior we cannot proceed and must stop immediately.
-                Notifications.AddNotification(new Notification(string.Format("No AutoCarry composite could be found for champion: {0}", this.Champion), 3000));
+                Notifications.AddNotification(new Notification(string.Format("No composite could be found for champion: {0}", this.Champion), 3000));
                 return;
             }
 
