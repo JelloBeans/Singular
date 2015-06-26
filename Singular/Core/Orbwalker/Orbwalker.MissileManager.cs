@@ -28,6 +28,16 @@
         }
 
         /// <summary>
+        /// The event when a <see cref="Obj_AI_Turret"/> attacks a target.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="arg">The <see cref="GameObjectProcessSpellCastEventArgs"/> instance containing the event data.</param>
+        private void Orbwalker_Missile_Obj_AI_Turret_OnProcessSpellCast(Obj_AI_Turret sender, GameObjectProcessSpellCastEventArgs arg)
+        {
+            
+        }
+
+        /// <summary>
         /// The game object deleted event of <see cref="GameObject"/>.
         /// </summary>
         /// <param name="sender">The sender.</param>

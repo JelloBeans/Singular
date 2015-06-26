@@ -91,6 +91,13 @@
         /// <param name="args">The <see cref="GameObjectProcessSpellCastEventArgs"/> instance containing the event data.</param>
         private void Orbwalker_Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
+            var turret = sender as Obj_AI_Turret;
+            if (turret != null)
+            {
+                this.Orbwalker_Missile_Obj_AI_Turret_OnProcessSpellCast(turret, args);
+                return;
+            }
+
             if (!sender.IsMe)
             {
                 return;
