@@ -5,12 +5,91 @@
     using global::Singular.Core.Enum;
 
     using LeagueSharp;
+    using LeagueSharp.Common;
 
     /// <summary>
     /// Extensions for the orb walker class.
     /// </summary>
     public static class OrbwalkerHelpers
     {
+        /// <summary>
+        /// Gets the game ping.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetGamePing()
+        {
+            return Game.Ping / 2;
+        }
+
+        /// <summary>
+        /// Gets the game tick count.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetGameTickCount()
+        {
+            return Utils.GameTimeTickCount + GetGamePing();
+        }
+
+        /// <summary>
+        /// Gets the hero auto attack delay.
+        /// </summary>
+        /// <param name="hero">The hero.</param>
+        /// <returns>
+        /// The player attack delay
+        /// </returns>
+        public static int GetHeroAutoAttackDelay(this Obj_AI_Hero hero)
+        {
+            return (int)(hero.AttackDelay * 1000);
+        }
+
+        /// <summary>
+        /// Gets the hero attack cast delay.
+        /// </summary>
+        /// <param name="hero">The hero.</param>
+        /// <returns></returns>
+        public static int GetHeroAttackCastDelay(this Obj_AI_Hero hero)
+        {
+            return (int)(hero.AttackCastDelay * 1000);
+        }
+
+        /// <summary>
+        /// Determines whether [is auto attack ready] for [the specified hero].
+        /// </summary>
+        /// <param name="lastAttack">The last attack.</param>
+        /// <param name="hero">The hero.</param>
+        /// <returns>True if auto attack is ready.</returns>
+        public static bool IsAutoAttackReady(this Obj_AI_Hero hero, int lastAttack)
+        {
+            return GetGameTickCount() >= lastAttack + GetHeroAutoAttackDelay(hero);
+        }
+
+        /// <summary>
+        /// Gets the time until auto attack ready.
+        /// </summary>
+        /// <param name="hero">The hero.</param>
+        /// <param name="lastAttack">The last attack.</param>
+        /// <returns>The time until auto attack is ready.</returns>
+        public static int TimeUntilAutoAttackReady(this Obj_AI_Hero hero, int lastAttack)
+        {
+            if (lastAttack == 0)
+            {
+                return 0;
+            }
+
+            return lastAttack + GetHeroAutoAttackDelay(hero) - GetGameTickCount();
+        }
+
+        /// <summary>
+        /// Determines whether [is move ready] for [the specified hero].
+        /// </summary>
+        /// <param name="lastAttack">The last attack.</param>
+        /// <param name="hero">The hero.</param>
+        /// <returns>True if move is ready.</returns>
+        public static bool IsMoveReady(this Obj_AI_Hero hero, int lastAttack)
+        {
+            return GetGameTickCount() >= lastAttack + GetHeroAttackCastDelay(hero);
+        }
+
         /// <summary>
         /// Determines whether [is automatic attack] [the specified ability].
         /// </summary>
@@ -52,53 +131,32 @@
         }
 
         /// <summary>
-        /// Time until the source dies.
+        /// Gets the predicted health using missile markers and our projectile delay.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="orbwalker">The orb walker.</param>
-        /// <returns>The time until the source dies.</returns>
-        public static int TimeTillDeath(this Obj_AI_Base source, Orbwalker orbwalker)
+        /// <param name="orbwalker">The orbwalker.</param>
+        /// <param name="delay">The projectile delay.</param>
+        /// <returns></returns>
+        public static double GetPredictedHealth(this Obj_AI_Base source, Orbwalker orbwalker, int delay)
         {
             var health = (double)source.Health;
             foreach (var marker in orbwalker.MissileMarkers.Where(m => m.Target.NetworkId == source.NetworkId).OrderBy(m => m.CollisionTime))
             {
-                // Subtract the damage from the source health.
+                var collisionTime = marker.CollisionTime;
+                if (GetGameTickCount() >= collisionTime - delay)
+                {
+                    break;
+                }
+
                 health -= marker.Damage;
 
-                // If unit will die return the collision time minus the current game time
                 if (health <= 0)
                 {
-                    return (int)(marker.CollisionTime - Game.Time);
+                    return health;
                 }
             }
 
-            return int.MaxValue;
-        }
-
-        /// <summary>
-        /// Gets the missile count.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="orbwalker">The orb walker.</param>
-        /// <returns>
-        /// Get the missile count for a source.
-        /// </returns>
-        public static int GetMissileCount(this Obj_AI_Base source, Orbwalker orbwalker)
-        {
-            return orbwalker.MissileMarkers.Count(m => m.Target.NetworkId == source.NetworkId);
-        }
-
-        /// <summary>
-        /// Gets the missile damage.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="orbwalker">The orb walker.</param>
-        /// <returns>
-        /// Gets the missile damage for a source.
-        /// </returns>
-        public static double GetMissileDamage(this Obj_AI_Base source, Orbwalker orbwalker)
-        {
-            return orbwalker.MissileMarkers.Where(m => m.Target.NetworkId == source.NetworkId).Sum(m => m.Damage);
+            return health;
         }
     }
 }

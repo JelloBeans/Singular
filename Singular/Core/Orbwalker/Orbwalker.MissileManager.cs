@@ -50,11 +50,12 @@
         /// <summary>
         /// The game update event of <see cref="GameObject"/>.
         /// </summary>
-        /// <param name="args">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void Orbwalker_Missile_Game_OnUpdate(System.EventArgs args)
+        private void Orbwalker_Missile_Game_OnUpdate()
         {
-            var gameTime = Game.Time;
+            var gameTime = OrbwalkerHelpers.GetGameTickCount();
             this.MissileMarkers.RemoveAll(m => m.CollisionTime >= gameTime);
+
+            this.MissileMarkers.ForEach(m => m.Update());
         }
 
     }

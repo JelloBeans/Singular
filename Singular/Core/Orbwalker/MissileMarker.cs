@@ -41,6 +41,14 @@
         public double CollisionTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the missile speed.
+        /// </summary>
+        /// <value>
+        /// The missile speed.
+        /// </value>
+        public float MissileSpeed { get; set; }
+
+        /// <summary>
         /// Gets or sets the damage.
         /// </summary>
         /// <value>
@@ -56,14 +64,29 @@
         {
             this.MissileClient = client;
 
+            this.Source = client.SpellCaster;
             this.Target = (Obj_AI_Base)client.Target;
+            this.MissileSpeed = client.SData.MissileSpeed;
 
             var startPosition = client.StartPosition;
-            var targetPosition = this.Target.Position;
+            var targetPosition = client.Target.Position;
             var distance = startPosition.Distance(targetPosition);
-            this.CollisionTime = Game.Time + ((distance / client.SData.MissileSpeed) * 1000);
+            this.CollisionTime = OrbwalkerHelpers.GetGameTickCount() + ((distance / client.SData.MissileSpeed) * 1000);
 
             this.Damage = client.SpellCaster.GetAutoAttackDamage(this.Target);
+        }
+
+        /// <summary>
+        /// Updates this instances values.
+        /// </summary>
+        public void Update()
+        {
+            var client = this.MissileClient;
+
+            var startPosition = client.StartPosition;
+            var targetPosition = client.Target.Position;
+            var distance = startPosition.Distance(targetPosition);
+            this.CollisionTime = OrbwalkerHelpers.GetGameTickCount() + ((distance / client.SData.MissileSpeed) * 1000);
         }
     }
 }

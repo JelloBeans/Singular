@@ -1,5 +1,9 @@
 ﻿namespace Singular.Core.Orbwalker
 {
+    using System;
+
+    using global::Singular.Core.Enum;
+
     using LeagueSharp;
     using LeagueSharp.Common;
 
@@ -16,9 +20,21 @@
         public delegate void OnAfterAutoAttackHandler(AttackableUnit sender, AttackableUnit target);
 
         /// <summary>
+        /// The handler for the before auto attack event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="target">The target.</param>
+        public delegate void OnBeforeAutoAttackHandler(AttackableUnit sender, AttackableUnit target);
+
+        /// <summary>
         /// The after auto attack event.
         /// </summary>
         public static event OnAfterAutoAttackHandler OnAfterAutoAttack;
+
+        /// <summary>
+        /// The before auto attack event.
+        /// </summary>
+        public static event OnBeforeAutoAttackHandler OnBeforeAutoAttack;
 
         /// <summary>
         /// Attaches the orb walker events.
@@ -27,7 +43,7 @@
         {
             GameObject.OnCreate += this.Orbwalker_GameObject_OnCreate;
             GameObject.OnDelete += this.Orbwalker_Missile_GameObject_OnDelete;
-            Game.OnUpdate += this.Orbwalker_Missile_Game_OnUpdate;
+            Game.OnUpdate += this.Orbwalker_Game_OnUpdate;
             Drawing.OnDraw += Orbwalker_Drawing_OnDraw;
             
             Obj_AI_Base.OnProcessSpellCast += this.Orbwalker_Obj_AI_Base_OnProcessSpellCast;
@@ -35,16 +51,49 @@
         }
 
         /// <summary>
-        /// Resets the last auto attack move timer and fires the after auto attack event.
+        /// Fires the after auto attack event.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="target">The target.</param>
-        private void AfterAutoAttack(AttackableUnit sender, AttackableUnit target)
+        private static void AfterAutoAttack(AttackableUnit sender, AttackableUnit target)
         {
-            this.LastAutoAttackMove = 0;
             if (OnAfterAutoAttack != null)
             {
                 OnAfterAutoAttack(sender, target);
+            }
+        }
+
+        /// <summary>
+        /// Fires the before auto attack event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="target">The target.</param>
+        private static void BeforeAutoAttack(AttackableUnit sender, AttackableUnit target)
+        {
+            if (OnBeforeAutoAttack != null)
+            {
+                OnBeforeAutoAttack(sender, target);
+            }
+        }
+
+        /// <summary>
+        /// The on update event of a game.
+        /// </summary>
+        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Orbwalker_Game_OnUpdate(EventArgs args)
+        {
+            this.Orbwalker_Missile_Game_OnUpdate();
+
+            var activeMode = this.ActiveMode;
+            if (activeMode == OrbwalkerMode.None)
+            {
+                return;
+            }
+
+            var target = this.GetTarget(activeMode);
+            if (target != null)
+            {
+                this.Orbwalk(target, Game.CursorPos);
             }
         }
 
@@ -53,7 +102,7 @@
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void Orbwalker_GameObject_OnCreate(GameObject sender, System.EventArgs args)
+        private void Orbwalker_GameObject_OnCreate(GameObject sender, EventArgs args)
         {
             if (!sender.IsValid)
             {
@@ -81,7 +130,9 @@
                 return;
             }
 
-            this.AfterAutoAttack(missile.SpellCaster, target);
+            this.MissileLaunched = true;
+
+            AfterAutoAttack(missile.SpellCaster, target);
         }
 
         /// <summary>
@@ -109,8 +160,7 @@
                 return;
             }
 
-            this.LastAutoAttack = Game.Time;
-            this.LastAutoAttackMove = Game.Time;
+            this.LastAutoAttack = OrbwalkerHelpers.GetGameTickCount();
 
             if (!sender.IsMeele)
             {
@@ -119,7 +169,7 @@
 
             var attackCastDelay = sender.AttackCastDelay;
             var actionDelay = (attackCastDelay * 1000);
-            Utility.DelayAction.Add((int)actionDelay, () => this.AfterAutoAttack(sender, (AttackableUnit)args.Target));
+            Utility.DelayAction.Add((int)actionDelay, () => AfterAutoAttack(sender, (AttackableUnit)args.Target));
         }
 
         /// <summary>
@@ -135,7 +185,6 @@
             }
 
             this.LastAutoAttack = 0;
-            this.LastAutoAttackMove = 0;
         }
     }
 }

@@ -48,14 +48,10 @@
             var matches = new Dictionary<BehaviorAttribute, Type>();
             foreach (var type in Types)
             {
-                foreach (var attribute in type.GetCustomAttributes(typeof(BehaviorAttribute), false))
+                foreach (var behavior in type.GetCustomAttributes(typeof(BehaviorAttribute), false)
+                    .OfType<BehaviorAttribute>()
+                    .Where(behavior => IsMatchingMethod(behavior, champion, BehaviorType.Initialize)))
                 {
-                    var behavior = attribute as BehaviorAttribute;
-                    if (behavior == null || !IsMatchingMethod(behavior, champion, BehaviorType.Initialize))
-                    {
-                        continue;
-                    }
-
                     matches.Add(behavior, type);
                 }
             }
@@ -86,14 +82,10 @@
 
             foreach (var type in Types)
             {
-                foreach (var attribute in type.GetCustomAttributes(typeof(BehaviorAttribute), false))
+                foreach (var behaviorAttribute in type.GetCustomAttributes(typeof(BehaviorAttribute), false)
+                    .OfType<BehaviorAttribute>()
+                    .Where(behaviorAttribute => IsMatchingMethod(behaviorAttribute, champion, behavior)))
                 {
-                    var behaviorAttribute = attribute as BehaviorAttribute;
-                    if (behaviorAttribute == null || !IsMatchingMethod(behaviorAttribute, champion, behavior))
-                    {
-                        continue;
-                    }
-
                     CurrentBehaviorType = behavior;
                     var composite = InvokeComposite(type);
                     matches.Add(behaviorAttribute, composite);
@@ -129,12 +121,7 @@
                 return false;
             }
 
-            if ((attribute.Type & type) == 0)
-            {
-                return false;
-            }
-
-            return true;
+            return (attribute.Type & type) != 0;
         }
 
         /// <summary>

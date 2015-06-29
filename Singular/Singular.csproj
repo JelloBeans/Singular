@@ -138,6 +138,7 @@
     <Compile Include="Core\Orbwalker\MissileMarker.cs" />
     <Compile Include="Core\Orbwalker\Orbwalker.cs" />
     <Compile Include="Core\Orbwalker\Orbwalker.Events.cs" />
+    <Compile Include="Core\Orbwalker\Orbwalker.TargetSelector.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
