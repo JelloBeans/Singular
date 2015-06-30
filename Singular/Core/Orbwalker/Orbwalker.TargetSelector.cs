@@ -45,7 +45,8 @@
 
             // Prioritize Super > Cannon > Melee > Range
             // Although we prioritize we still want to fire non killable minion events so we cannot return the first killable minion.
-            foreach (var minion in GameObjects.EnemyMinions.Where(m => m.IsValidTarget()).OrderByDescending(m => m.MaxHealth))
+            // TODO: If minion can die check if we should wait for a cannon that can die in auto attack delay. (DONT MISS CANNON)
+            foreach (var minion in GameObjects.EnemyMinions.Where(m => m.IsValidTarget() && Me.IsInAutoAttackRange(m)).OrderByDescending(m => m.MaxHealth))
             {
                 var current = minion;
 
@@ -54,21 +55,21 @@
                 var markers = this.MissileMarkers.Where(m => m.Target.NetworkId == current.NetworkId);
                 if (!markers.Any())
                 {
-                    if (damage < current.Health && (target == null || target.MaxHealth < current.MaxHealth))
+                    if (current.Health < damage && (target == null || target.MaxHealth < current.MaxHealth))
                     {
                         target = current;
                     }
                     continue;
                 }
 
-                var distance = Me.ServerPosition.Distance(minion.ServerPosition);
-                var myProjectileTime = Me.TimeUntilAutoAttackReady(this.LastAutoAttack) + OrbwalkerHelpers.GetGameTickCount() + attackCastDelay;
+                var attackDelay = Me.TimeUntilAutoAttackReady(this.LastAutoAttack) + attackCastDelay;
                 if (!Me.IsMeele)
                 {
-                    myProjectileTime += (int)(1000 * (distance / projectileSpeed));
+                    var distance = Me.ServerPosition.Distance(minion.ServerPosition);
+                    attackDelay += (int)(1000 * (distance / projectileSpeed));
                 }
 
-                var prediction = current.GetPredictedHealth(this, myProjectileTime);
+                var prediction = current.GetPredictedHealth(this, attackDelay);
                 if (prediction <= 0)
                 {
                     // Fire non killable minion event
@@ -77,6 +78,14 @@
                 if (prediction > 0 && prediction < damage && (target == null || target.MaxHealth < current.MaxHealth))
                 {
                     target = current;
+                }
+                else if (prediction > 0)
+                {
+                    prediction = current.GetPredictedHealth(this, attackDelay + 250); // attack reset
+                    if (prediction > 0 && prediction < damage)
+                    {
+                        // Fire killable minion event with attack reset
+                    }
                 }
             }
 

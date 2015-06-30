@@ -7,6 +7,8 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
+    using SharpDX;
+
     /// <summary>
     /// Extensions for the orb walker class.
     /// </summary>
@@ -73,7 +75,7 @@
         {
             if (lastAttack == 0)
             {
-                return 0;
+                return GetHeroAutoAttackDelay(hero);
             }
 
             return lastAttack + GetHeroAutoAttackDelay(hero) - GetGameTickCount();
@@ -115,6 +117,47 @@
         }
 
         /// <summary>
+        /// Gets the real auto attack range.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="target">The target.</param>
+        /// <returns></returns>
+        public static float GetRealAutoAttackRange(this Obj_AI_Hero source, AttackableUnit target)
+        {
+            var result = source.AttackRange + source.BoundingRadius;
+            if (target.IsValidTarget())
+            {
+                return result + target.BoundingRadius;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Checks if target is in auto attack range
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="unit">The target unit.</param>
+        /// <returns></returns>
+        public static bool IsInAutoAttackRange(this Obj_AI_Hero source, AttackableUnit unit)
+        {
+            if (!unit.IsValidTarget())
+            {
+                return false;
+            }
+
+            var range = source.GetRealAutoAttackRange(unit);
+            var rangeSqr = range * range;
+
+            var target = unit as Obj_AI_Base;
+            if (target != null)
+            {
+                return Vector2.DistanceSquared(target.ServerPosition.To2D(), source.ServerPosition.To2D()) <= rangeSqr;
+            }
+
+            return Vector2.DistanceSquared(unit.Position.To2D(), source.ServerPosition.To2D()) <= rangeSqr;
+        }
+
+        /// <summary>
         /// Gets the projectile speed.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -139,11 +182,12 @@
         /// <returns></returns>
         public static double GetPredictedHealth(this Obj_AI_Base source, Orbwalker orbwalker, int delay)
         {
+            var gameTick = GetGameTickCount();
             var health = (double)source.Health;
             foreach (var marker in orbwalker.MissileMarkers.Where(m => m.Target.NetworkId == source.NetworkId).OrderBy(m => m.CollisionTime))
             {
                 var collisionTime = marker.CollisionTime;
-                if (GetGameTickCount() >= collisionTime - delay)
+                if (gameTick >= collisionTime - delay || collisionTime >= gameTick + delay)
                 {
                     break;
                 }
